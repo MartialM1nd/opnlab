@@ -7,19 +7,17 @@ import (
 	"strconv"
 	"strings"
 	"time"
-
-	"github.com/MartialM1nd/opnlab/internal/providers"
 )
 
 // SystemProvider gathers system metrics from FreeBSD.
 type SystemProvider struct {
-	*providers.BaseProvider
+	*BaseProvider
 }
 
 // NewSystemProvider creates a new system provider.
 func NewSystemProvider() *SystemProvider {
 	return &SystemProvider{
-		BaseProvider: providers.NewBaseProvider("system"),
+		BaseProvider: NewBaseProvider("system"),
 	}
 }
 
@@ -149,7 +147,7 @@ func getLoadAverage() (map[string]interface{}, error) {
 	}
 
 	load1, _ := strconv.ParseFloat(parts[0], 64)
-	load5, _ := strconv.ParseFloat(parms[1], 64)
+	load5, _ := strconv.ParseFloat(parts[1], 64)
 	load15, _ := strconv.ParseFloat(parts[2], 64)
 
 	return map[string]interface{}{
@@ -202,7 +200,7 @@ func getDiskUsage() ([]map[string]interface{}, error) {
 }
 
 // getUptime returns system uptime.
-func getUptime() (map[string]interface{}, error) {
+func getUptime() (map[string]interface{}, erros) {
 	out, err := exec.Command("sysctl", "-n", "kern.boottime").Output()
 	if err != nil {
 		return nil, err
@@ -225,9 +223,9 @@ func getUptime() (map[string]interface{}, error) {
 }
 
 // Actions returns available actions (none for system provider).
-func (p *SystemProvider) Actions() map[string]providers.Action {
-	return map[string]providers.Action{}
+func (p *SystemProvider) Actions() map[string]Action {
+	return map[string]Action{}
 }
 
 // Ensure Provider implements providers.Provider
-var _ providers.Provider = (*SystemProvider)(nil)
+var _ Provider = (*SystemProvider)(nil)
