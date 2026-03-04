@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/MartialM1nd/opnlab/internal/providers"
+	"github.com/MartialM1nd/opnlab/internal/providers/system"
 	"github.com/MartialM1nd/opnlab/internal/server"
 )
 
@@ -11,8 +13,8 @@ func main() {
 	// Create new server
 	srv := server.New()
 
-	// TODO: Register providers here
-	// Example: srv.RegisterProvider(&system.Provider{})
+	// Register providers
+	srv.RegisterProvider(system.New())
 
 	// Start server
 	addr := ":8080"
