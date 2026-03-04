@@ -1,24 +1,25 @@
 package main
 
 import (
-	"net/http"
-	"time"
+	"fmt"
+	"log"
 
-	"github.com/gin-gonic/gin"
+	"github.com/MartialM1nd/opnlab/internal/server"
 )
 
 func main() {
-	// Create Gin router
-	router := gin.Default()
+	// Create new server
+	srv := server.New()
 
-	// Health check endpoint
-	router.GET("/health", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"status": "ok",
-			"time":   time.Now().Format(time.RFC3339),
-		})
-	})
+	// TODO: Register providers here
+	// Example: srv.RegisterProvider(&system.Provider{})
 
 	// Start server
-	router.Run(":8080")
+	addr := ":8080"
+	log.Printf("Starting opnlab server on %s", addr)
+	if err := srv.Run(addr); err != nil {
+		log.Fatalf("Failed to start server: %v", err)
+	}
+
+	fmt.Println("opnlab server started")
 }
