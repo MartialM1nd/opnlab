@@ -14,7 +14,7 @@ func main() {
 	srv := server.New()
 
 	// Register providers
-	srv.RegisterProvider(system.New())
+	srv.RegisterProvider(system.NewSystemProvider())
 
 	// Start server
 	addr := ":8080"
