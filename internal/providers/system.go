@@ -1,4 +1,4 @@
-package system
+package providers
 
 import (
 	"bytes"
@@ -11,20 +11,20 @@ import (
 	"github.com/MartialM1nd/opnlab/internal/providers"
 )
 
-// Provider gathers system metrics from FreeBSD.
-type Provider struct {
+// SystemProvider gathers system metrics from FreeBSD.
+type SystemProvider struct {
 	*providers.BaseProvider
 }
 
-// New creates a new system provider.
-func New() *Provider {
-	return &Provider{
+// NewSystemProvider creates a new system provider.
+func NewSystemProvider() *SystemProvider {
+	return &SystemProvider{
 		BaseProvider: providers.NewBaseProvider("system"),
 	}
 }
 
 // Collect gathers system metrics.
-func (p *Provider) Collect() (map[string]interface{}, error) {
+func (p *SystemProvider) Collect() (map[string]interface{}, error) {
 	data := make(map[string]interface{})
 
 	// Get CPU usage
@@ -79,7 +79,6 @@ func getCPUUsage() (map[string]interface{}, error) {
 		return nil, fmt.Errorf("not enough fields in vmstat output")
 	}
 
-	// us, sy, id, wa
 	user, _ := strconv.ParseFloat(fields[13], 64)
 	system, _ := strconv.ParseFloat(fields[14], 64)
 	idle, _ := strconv.ParseFloat(fields[16], 64)
@@ -141,7 +140,6 @@ func getLoadAverage() (map[string]interface{}, error) {
 		return nil, err
 	}
 
-	// Parse output like: { 0.50 0.40 0.45 }
 	trimmed := strings.Trim(string(out), "{}
  ")
 	parts := strings.Fields(trimmed)
@@ -182,7 +180,6 @@ func getDiskUsage() ([]map[string]interface{}, error) {
 			continue
 		}
 
-		// Skip pseudo filesystems
 		if fields[0] == "tmpfs" || fields[0] == "devfs" || fields[0] == "fdescfs" {
 			continue
 		}
@@ -211,9 +208,8 @@ func getUptime() (map[string]interface{}, error) {
 		return nil, err
 	}
 
-	// Parse timestamp
 	trimmed := strings.TrimSpace(string(out))
-	bootTime, err := strconv.ParsiInt(trimmed, 10, 64)
+	bootTime, err := strconv.ParseInt(trimmed, 10, 64)
 	if err != nil {
 		return nil, err
 	}
@@ -222,16 +218,16 @@ func getUptime() (map[string]interface{}, error) {
 	uptime := time.Since(boot)
 
 	return map[string]interface{}{
-		"bootTime":  boot.Format(time.RFC3339),
+		"bootTime":      boot.Format(time.RFC3339),
 		"uptimeSeconds": uptime.Seconds(),
-		"uptime":    uptime.String(),
+		"uptime":        uptime.String(),
 	}, nil
 }
 
 // Actions returns available actions (none for system provider).
-func (p *Provider) Actions() map[string]providers.Action {
+func (p *SystemProvider) Actions() map[string]providers.Action {
 	return map[string]providers.Action{}
 }
 
 // Ensure Provider implements providers.Provider
-var _ providers.Provider = (*Provider)(nil)
+var _ providers.Provider = (*SystemProvider)(nil)
