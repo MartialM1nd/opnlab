@@ -124,7 +124,7 @@ func (s *Server) executeAction(c *gin.Context) {
 
 	// Parse request body as JSON params
 	var params map[string]string
-	if err := json.NewDecoder(c.Request.Body).Decode(¶ms); err != nil {
+	if err := json.NewDecoder(c.Request.Body).Decode(&params); err != nil {
 		params = make(map[string]string)
 	}
 
