@@ -39,7 +39,7 @@ func NewBaseProvider(name string) *BaseProvider {
 }
 
 // Name returns the provider's name.
-func (p *BaseProvier) Name() string {
+func (p *BaseProvider) Name() string {
 	return p.name
 }
 

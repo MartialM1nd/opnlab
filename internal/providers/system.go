@@ -1,7 +1,6 @@
 package providers
 
 import (
-	"bytes"
 	"fmt"
 	"os/exec"
 	"strconv"
@@ -66,8 +65,7 @@ func getCPUUsage() (map[string]interface{}, error) {
 		return nil, err
 	}
 
-	lines := strings.Split(string(out), "
-")
+	lines := strings.Split(string(out), "\n")
 	if len(lines) < 2 {
 		return nil, fmt.Errorf("unexpected vmstat output")
 	}
@@ -138,8 +136,7 @@ func getLoadAverage() (map[string]interface{}, error) {
 		return nil, err
 	}
 
-	trimmed := strings.Trim(string(out), "{}
- ")
+	trimmed := strings.Trim(string(out), "{} \n")
 	parts := strings.Fields(trimmed)
 
 	if len(parts) < 3 {
@@ -165,8 +162,7 @@ func getDiskUsage() ([]map[string]interface{}, error) {
 	}
 
 	var disks []map[string]interface{}
-	lines := strings.Split(string(out), "
-")
+	lines := strings.Split(string(out), "\n")
 
 	for _, line := range lines[1:] {
 		if strings.TrimSpace(line) == "" {
@@ -183,8 +179,8 @@ func getDiskUsage() ([]map[string]interface{}, error) {
 		}
 
 		mountPoint := fields[5]
-		used, _ := strconv.ParseUint(fields[2], 10, 1024)
-		available, _ := strconv.ParseUint(fields[3], 10, 1024)
+		used, _ := strconv.ParseUint(fields[2], 10, 64)
+		available, _ := strconv.ParseUint(fields[3], 10, 64)
 		capacity, _ := strconv.Atoi(strings.Trim(fields[4], "%"))
 
 		disks = append(disks, map[string]interface{}{
@@ -200,7 +196,7 @@ func getDiskUsage() ([]map[string]interface{}, error) {
 }
 
 // getUptime returns system uptime.
-func getUptime() (map[string]interface{}, erros) {
+func getUptime() (map[string]interface{}, error) {
 	out, err := exec.Command("sysctl", "-n", "kern.boottime").Output()
 	if err != nil {
 		return nil, err

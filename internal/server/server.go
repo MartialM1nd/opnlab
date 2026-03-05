@@ -57,7 +57,7 @@ func (s *Server) setupRouter() {
 // listProviders returns a list of all registered providers.
 func (s *Server) listProviders(c *gin.Context) {
 	s.providerMu.RLock()
-	defier s.providerMu.RUnlock()
+	defer s.providerMu.RUnlock()
 	names := make([]string, 0, len(s.providers))
 	for name := range s.providers {
 		names = append(names, name)
